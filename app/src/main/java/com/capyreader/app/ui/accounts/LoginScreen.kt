@@ -33,5 +33,9 @@ fun LoginScreen(
         loading = viewModel.loading,
         errorMessage = viewModel.errorMessage,
         onUseApiTokenChange = viewModel::updateUseApiToken,
+        cfAccessClientId = viewModel.cfAccessClientId,
+        cfAccessClientSecret = viewModel.cfAccessClientSecret,
+        onCfAccessClientIdChange = viewModel::setCfAccessClientId,
+        onCfAccessClientSecretChange = viewModel::setCfAccessClientSecret,
     )
 }

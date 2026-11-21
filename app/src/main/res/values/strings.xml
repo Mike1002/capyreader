@@ -360,6 +360,9 @@
     <string name="auth_fields_miniflux_use_api_token">Use API Token instead</string>
     <string name="auth_fields_miniflux_use_password">Use Password instead</string>
     <string name="auth_fields_show_advanced">Advanced options</string>
+    <string name="auth_fields_cloudflare_access">Cloudflare Access (Optional)</string>
+    <string name="auth_fields_cloudflare_client_id">Client ID</string>
+    <string name="auth_fields_cloudflare_client_secret">Client Secret</string>
     <string name="auth_fields_hide_advanced">Hide advanced options</string>
     <string name="freshrss_visibility">Visibility</string>
     <string name="freshrss_visibility_option_main">Main Stream</string>

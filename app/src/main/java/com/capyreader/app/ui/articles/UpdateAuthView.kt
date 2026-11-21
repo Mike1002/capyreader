@@ -35,7 +35,11 @@ fun UpdateAuthView(
     password: String,
     clientCertAlias: String = "",
     loading: Boolean = false,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    cfAccessClientId: String = "",
+    cfAccessClientSecret: String = "",
+    onCfAccessClientIdChange: (clientId: String) -> Unit = {},
+    onCfAccessClientSecretChange: (clientSecret: String) -> Unit = {},
 ) {
     DialogCard {
         MediumTopAppBar(
@@ -73,6 +77,10 @@ fun UpdateAuthView(
                 onChooseClientCert = onChooseClientCert,
                 onClearClientCert = onClearClientCert,
                 clientCertAlias = clientCertAlias,
+                cfAccessClientId = cfAccessClientId,
+                cfAccessClientSecret = cfAccessClientSecret,
+                onCfAccessClientIdChange = onCfAccessClientIdChange,
+                onCfAccessClientSecretChange = onCfAccessClientSecretChange,
             )
         }
     }

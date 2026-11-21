@@ -14,6 +14,7 @@ import com.jocmp.capy.AccountManager
 import com.jocmp.capy.ClientCertManager
 import com.jocmp.capy.accounts.Credentials
 import com.jocmp.capy.accounts.Source
+import com.jocmp.capy.accounts.reader.ReaderCredentials
 import com.jocmp.capy.accounts.withFreshRSSPath
 import com.jocmp.capy.accounts.withMinifluxPath
 import com.jocmp.capy.common.Async
@@ -34,6 +35,8 @@ class LoginViewModel(
     private var _password by mutableStateOf("")
     private var _url by mutableStateOf("")
     private var _clientCertAlias by mutableStateOf("")
+    private var _cfAccessClientId by mutableStateOf("")
+    private var _cfAccessClientSecret by mutableStateOf("")
     private var _result by mutableStateOf<Async<Unit>>(Async.Uninitialized)
     private var _useApiToken by mutableStateOf(false)
 
@@ -72,6 +75,20 @@ class LoginViewModel(
 
     fun setURL(url: String) {
         _url = url
+    }
+
+    val cfAccessClientId
+        get() = _cfAccessClientId
+
+    val cfAccessClientSecret
+        get() = _cfAccessClientSecret
+
+    fun setCfAccessClientId(clientId: String) {
+        _cfAccessClientId = clientId
+    }
+
+    fun setCfAccessClientSecret(clientSecret: String) {
+        _cfAccessClientSecret = clientSecret
     }
 
     val clientCertAlias
@@ -142,6 +159,8 @@ class LoginViewModel(
             url = url,
             clientCertAlias = clientCertAlias,
             clientCertManager = clientCertManager,
+            cfAccessClientId = cfAccessClientId,
+            cfAccessClientSecret = cfAccessClientSecret,
         )
 
     private fun createAccount(credentials: Credentials) {
@@ -151,6 +170,8 @@ class LoginViewModel(
             url = credentials.url,
             source = credentials.source,
             clientCertAlias = clientCertAlias,
+            cfAccessClientId = (credentials as? ReaderCredentials)?.cfAccessClientId.orEmpty(),
+            cfAccessClientSecret = (credentials as? ReaderCredentials)?.cfAccessClientSecret.orEmpty(),
         )
 
         selectAccount(accountID)

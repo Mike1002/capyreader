@@ -41,7 +41,11 @@ fun UpdateAuthDialog(
                 password = viewModel.password,
                 clientCertAlias = viewModel.clientCertAlias,
                 loading = viewModel.loading,
-                errorMessage = viewModel.errorMessage
+                errorMessage = viewModel.errorMessage,
+                cfAccessClientId = viewModel.cfAccessClientId,
+                cfAccessClientSecret = viewModel.cfAccessClientSecret,
+                onCfAccessClientIdChange = viewModel::setCfAccessClientId,
+                onCfAccessClientSecretChange = viewModel::setCfAccessClientSecret,
             )
         }
     }

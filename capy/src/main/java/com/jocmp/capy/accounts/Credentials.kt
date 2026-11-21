@@ -23,6 +23,8 @@ interface Credentials {
             url: String,
             clientCertAlias: String = "",
             clientCertManager: ClientCertManager = ClientCertManager { builder, _ -> builder },
+            cfAccessClientId: String = "",
+            cfAccessClientSecret: String = "",
         ): Credentials {
             return when (source) {
                 Source.FEEDBIN -> FeedbinCredentials(username, password)
@@ -41,6 +43,8 @@ interface Credentials {
                     url = normalizeURL(url),
                     clientCertAlias = clientCertAlias,
                     source = source,
+                    cfAccessClientId = cfAccessClientId.trim(),
+                    cfAccessClientSecret = cfAccessClientSecret.trim(),
                     clientCertManager = clientCertManager,
                 )
 

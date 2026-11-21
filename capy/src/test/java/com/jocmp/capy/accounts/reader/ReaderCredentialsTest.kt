@@ -55,6 +55,24 @@ internal class ReaderCredentialsTest {
     }
 
     @Test
+    fun verify_onSuccess_preservesCloudflareAccessToken() = runTest {
+        coEvery {
+            googleReader.clientLogin(
+                email = any(),
+                password = any()
+            )
+        }.returns(Response.success(successResponse))
+
+        val result = credentials
+            .copy(cfAccessClientId = "id.access", cfAccessClientSecret = "secret")
+            .verify()
+            .getOrNull() as ReaderCredentials
+
+        assertEquals(expected = "id.access", actual = result.cfAccessClientId)
+        assertEquals(expected = "secret", actual = result.cfAccessClientSecret)
+    }
+
+    @Test
     fun verify_onError_unauthorized() = runTest {
         coEvery { googleReader.clientLogin(email = any(), password = any()) }.returns(
             Response.success(

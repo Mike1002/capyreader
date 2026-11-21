@@ -14,6 +14,8 @@ data class ReaderCredentials(
     override val url: String,
     override val clientCertAlias: String = "",
     override val source: Source,
+    val cfAccessClientId: String = "",
+    val cfAccessClientSecret: String = "",
     private val clientCertManager: ClientCertManager = ClientCertManager { builder, _ -> builder },
 ) : Credentials {
     override suspend fun verify(): Result<Credentials> {
@@ -24,6 +26,13 @@ data class ReaderCredentials(
                 baseURL = url,
                 client = baseHttpClient()
                     .newBuilder()
+                    .addNetworkInterceptor(
+                        cloudflareAccessInterceptor(
+                            url = url,
+                            clientId = cfAccessClientId,
+                            clientSecret = cfAccessClientSecret,
+                        )
+                    )
                     .clientCertAlias(clientCertManager, clientCertAlias)
                     .build()
             )

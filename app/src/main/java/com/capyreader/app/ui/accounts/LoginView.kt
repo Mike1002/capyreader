@@ -57,6 +57,10 @@ fun LoginView(
     loading: Boolean = false,
     errorMessage: String? = null,
     onUseApiTokenChange: (Boolean) -> Unit = {},
+    cfAccessClientId: String = "",
+    cfAccessClientSecret: String = "",
+    onCfAccessClientIdChange: (clientId: String) -> Unit = {},
+    onCfAccessClientSecretChange: (clientSecret: String) -> Unit = {},
 ) {
     Scaffold(
         topBar = {
@@ -124,6 +128,10 @@ fun LoginView(
                             onClearClientCert = onClearClientCert,
                             clientCertAlias = clientCertAlias,
                             setApiTokenPreference = onUseApiTokenChange,
+                            cfAccessClientId = cfAccessClientId,
+                            cfAccessClientSecret = cfAccessClientSecret,
+                            onCfAccessClientIdChange = onCfAccessClientIdChange,
+                            onCfAccessClientSecretChange = onCfAccessClientSecretChange,
                         )
                     }
                 }
