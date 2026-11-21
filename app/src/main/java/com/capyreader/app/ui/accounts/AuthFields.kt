@@ -53,6 +53,7 @@ import com.capyreader.app.R
 import com.capyreader.app.ui.articles.feeds.IconDropdown
 import com.capyreader.app.ui.theme.CapyTheme
 import com.jocmp.capy.accounts.Source
+import com.jocmp.capy.accounts.reader.supportsCloudflareAccess
 
 @Composable
 fun AuthFields(
@@ -70,6 +71,10 @@ fun AuthFields(
     onClearClientCert: () -> Unit = {},
     clientCertAlias: String = "",
     setApiTokenPreference: (Boolean) -> Unit = {},
+    cfAccessClientId: String = "",
+    cfAccessClientSecret: String = "",
+    onCfAccessClientIdChange: (clientId: String) -> Unit = {},
+    onCfAccessClientSecretChange: (clientSecret: String) -> Unit = {},
 ) {
     val hasApiToken = source == Source.MINIFLUX_TOKEN
     val showApiTokenToggle = source == Source.MINIFLUX || hasApiToken
@@ -81,6 +86,10 @@ fun AuthFields(
 
     val (showAdvanced, setShowAdvanced) = rememberSaveable {
         mutableStateOf(clientCertAlias.isNotBlank())
+    }
+
+    val (showCloudflareAccess, setShowCloudflareAccess) = rememberSaveable {
+        mutableStateOf(cfAccessClientId.isNotBlank() || cfAccessClientSecret.isNotBlank())
     }
 
     val passwordTransformation = if (hasApiToken || showPassword) {
@@ -196,6 +205,7 @@ fun AuthFields(
 
                 if (source.hasCustomURL) {
                     AdvancedOptions(
+                        title = stringResource(R.string.auth_fields_show_advanced),
                         expanded = showAdvanced,
                         onToggle = { setShowAdvanced(!showAdvanced) },
                     ) {
@@ -203,6 +213,21 @@ fun AuthFields(
                             onChooseClientCert = onChooseClientCert,
                             onClearClientCert = onClearClientCert,
                             certAlias = clientCertAlias,
+                        )
+                    }
+                }
+
+                if (source.supportsCloudflareAccess) {
+                    AdvancedOptions(
+                        title = stringResource(R.string.auth_fields_cloudflare_access),
+                        expanded = showCloudflareAccess,
+                        onToggle = { setShowCloudflareAccess(!showCloudflareAccess) },
+                    ) {
+                        CloudflareAccessFields(
+                            clientId = cfAccessClientId,
+                            clientSecret = cfAccessClientSecret,
+                            onClientIdChange = onCfAccessClientIdChange,
+                            onClientSecretChange = onCfAccessClientSecretChange,
                         )
                     }
                 }
@@ -272,7 +297,80 @@ fun CertificateField(
 }
 
 @Composable
+private fun CloudflareAccessFields(
+    clientId: String,
+    clientSecret: String,
+    onClientIdChange: (clientId: String) -> Unit,
+    onClientSecretChange: (clientSecret: String) -> Unit,
+) {
+    val (showSecret, setSecretVisibility) = rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        TextField(
+            value = clientId,
+            onValueChange = onClientIdChange,
+            singleLine = true,
+            label = {
+                Text(stringResource(R.string.auth_fields_cloudflare_client_id))
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Ascii,
+                autoCorrectEnabled = false,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        TextField(
+            value = clientSecret,
+            onValueChange = onClientSecretChange,
+            singleLine = true,
+            label = {
+                Text(stringResource(R.string.auth_fields_cloudflare_client_secret))
+            },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Password,
+                autoCorrectEnabled = false,
+            ),
+            visualTransformation = if (showSecret) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            trailingIcon = {
+                val image = if (showSecret) {
+                    Icons.Filled.Visibility
+                } else {
+                    Icons.Filled.VisibilityOff
+                }
+
+                val contentDescription = if (showSecret) {
+                    R.string.auth_fields_hide_password
+                } else {
+                    R.string.auth_fields_show_password
+                }
+
+                IconButton(
+                    onClick = { setSecretVisibility(!showSecret) }
+                ) {
+                    Icon(
+                        imageVector = image,
+                        contentDescription = stringResource(contentDescription),
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
 private fun AdvancedOptions(
+    title: String,
     expanded: Boolean,
     onToggle: () -> Unit,
     content: @Composable () -> Unit,
@@ -293,7 +391,7 @@ private fun AdvancedOptions(
                 enabled = false,
             )
             Text(
-                text = stringResource(R.string.auth_fields_show_advanced),
+                text = title,
             )
         }
         AnimatedVisibility(

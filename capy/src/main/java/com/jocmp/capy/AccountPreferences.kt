@@ -26,6 +26,14 @@ class AccountPreferences(
     val password: Preference<String>
         get() = store.getString("password", "")
 
+    /** Cloudflare Access service token client ID, FreshRSS and Reader accounts only */
+    val cfAccessClientId: Preference<String>
+        get() = store.getString("cf_access_client_id", "")
+
+    /** Cloudflare Access service token secret, stored alongside [password] */
+    val cfAccessClientSecret: Preference<String>
+        get() = store.getString("cf_access_client_secret", "")
+
     val autoDelete: Preference<AutoDelete>
         get() = store.getEnum("auto_delete_articles", AutoDelete.default)
 

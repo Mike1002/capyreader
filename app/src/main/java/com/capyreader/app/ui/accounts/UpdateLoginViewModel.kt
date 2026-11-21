@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.jocmp.capy.Account
 import com.jocmp.capy.ClientCertManager
 import com.jocmp.capy.accounts.Credentials
+import com.jocmp.capy.accounts.reader.ReaderCredentials
 import com.jocmp.capy.common.Async
 import com.jocmp.capy.common.launchIO
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,8 @@ class UpdateLoginViewModel(
 
     private var _password by mutableStateOf("")
     private var _clientCertAlias by mutableStateOf(account.preferences.clientCertAlias.get())
+    private var _cfAccessClientId by mutableStateOf(account.preferences.cfAccessClientId.get())
+    private var _cfAccessClientSecret by mutableStateOf(account.preferences.cfAccessClientSecret.get())
     private var _result by mutableStateOf<Async<Unit>>(Async.Uninitialized)
 
     val password: String
@@ -32,6 +35,12 @@ class UpdateLoginViewModel(
 
     val clientCertAlias: String
         get() = _clientCertAlias
+
+    val cfAccessClientId: String
+        get() = _cfAccessClientId
+
+    val cfAccessClientSecret: String
+        get() = _cfAccessClientSecret
 
     val loading: Boolean
         get() = _result is Async.Loading
@@ -41,6 +50,14 @@ class UpdateLoginViewModel(
 
     fun setPassword(password: String) {
         _password = password
+    }
+
+    fun setCfAccessClientId(clientId: String) {
+        _cfAccessClientId = clientId
+    }
+
+    fun setCfAccessClientSecret(clientSecret: String) {
+        _cfAccessClientSecret = clientSecret
     }
 
     fun chooseClientCert(activity: Activity) {
@@ -83,11 +100,18 @@ class UpdateLoginViewModel(
             url = url,
             clientCertAlias = clientCertAlias,
             clientCertManager = clientCertManager,
+            cfAccessClientId = cfAccessClientId,
+            cfAccessClientSecret = cfAccessClientSecret,
         )
 
     private fun updateAccount(result: Credentials) {
         account.preferences.password.set(result.secret)
         account.preferences.clientCertAlias.set(_clientCertAlias)
+
+        if (result is ReaderCredentials) {
+            account.preferences.cfAccessClientId.set(result.cfAccessClientId)
+            account.preferences.cfAccessClientSecret.set(result.cfAccessClientSecret)
+        }
     }
 
     private fun loginError() = Error("Error logging in")

@@ -18,6 +18,7 @@ internal object ReaderOkHttpClient {
                     "GoogleLogin auth=${secret}"
                 }
             )
+            .addNetworkInterceptor(cloudflareAccessInterceptor { preferences })
             .clientCertAlias(clientCertManager, preferences.clientCertAlias.get())
             .build()
     }

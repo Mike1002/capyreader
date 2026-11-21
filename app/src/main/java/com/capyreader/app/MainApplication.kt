@@ -11,6 +11,8 @@ import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.capyreader.app.common.AndroidLogging
+import com.capyreader.app.common.CurrentAccountPreferences
+import com.jocmp.capy.accounts.reader.cloudflareAccessInterceptor
 import com.capyreader.app.preferences.AppPreferences
 import com.capyreader.app.ui.widget.HeadlinesWidgetReceiver
 import com.capyreader.app.ui.widget.SpotlightWidgetReceiver
@@ -46,11 +48,29 @@ class MainApplication : Application(), SingletonImageLoader.Factory {
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         return ImageLoader.Builder(context)
             .components {
-                add(OkHttpNetworkFetcherFactory(callFactory = { get<OkHttpClient>() }))
+                add(OkHttpNetworkFetcherFactory(callFactory = { imageHttpClient() }))
                 add(AnimatedImageDecoder.Factory())
                 add(SvgDecoder.Factory())
                 add(VideoFrameDecoder.Factory())
             }
+            .build()
+    }
+
+    /**
+     * Shares the common client's cache and connection pool, adding the
+     * Cloudflare Access service token for images hosted on the account's
+     * own FreshRSS / Reader server (favicons, proxied images). The token
+     * is never sent to other hosts.
+     */
+    private fun imageHttpClient(): OkHttpClient {
+        val currentAccount = CurrentAccountPreferences(
+            appPreferences = get(),
+            preferenceStoreProvider = get(),
+        )
+
+        return get<OkHttpClient>()
+            .newBuilder()
+            .addNetworkInterceptor(cloudflareAccessInterceptor(currentAccount))
             .build()
     }
 

@@ -33,6 +33,8 @@ class AccountManager(
         url: String,
         source: Source,
         clientCertAlias: String = "",
+        cfAccessClientId: String = "",
+        cfAccessClientSecret: String = "",
     ): String {
         val accountID = createAccount(source = source)
 
@@ -41,6 +43,8 @@ class AccountManager(
             preferences.password.set(password)
             preferences.url.set(url)
             preferences.clientCertAlias.set(clientCertAlias)
+            preferences.cfAccessClientId.set(cfAccessClientId)
+            preferences.cfAccessClientSecret.set(cfAccessClientSecret)
         }
 
         return accountID
